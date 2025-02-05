@@ -1,0 +1,39 @@
+# The complexPlaneWidth is how much of the real axis we can see
+# in our bitmap viewport; making this number smaller would mean
+# more "zoom". And changing the complexPlaneLeftEdgeCoord would
+# mean panning left and right:
+
+complexPlaneWidth = 2
+complexPlaneLeftEdgeCoord = -2
+
+# And here is our bitmap width in pixels:
+
+bitmapWidth = 400
+
+# The following function converts an x pixel coordinate on the
+# bitmap plane into the corresponding real coordinate on the
+# complex plane:
+
+computeRealPartFromX(x):
+
+    # x was in the range 0-to-bitmapWidth;
+    # we want to remap it to the range 0-to-1:
+
+    f = x / bitmapWidth  # floating-point calculation
+
+    # Now f is in the range 0-to-1; remap it to the range
+    # 0-to-complexPlaneWidth:
+
+    realPart = f * complexPlaneWidth
+
+    # Finally, we need to shift it over from the range
+    #    0-to-complexPlaneWidth
+    #
+    # to
+    #
+    # complexPlaneLeftEdgeCoord-to-
+    #        (complexPlaneLeftEdgeCoord + complexPlaneWidth)
+
+    realPart = realPart + complexPlaneLeftEdgeCoord
+
+    return realPart

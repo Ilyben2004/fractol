@@ -1,0 +1,47 @@
+for x,y in (all pixels on screen):
+
+    # First, we need to convert from screen coordinates to the
+    # coordinates on the complex plane they represent.  We want to store
+    # this result in our number "c".  We'll map x to the real part of c,
+    # and y to the imaginary part of c:
+
+    cReal = computeRealPartFromX(x)      # Implemented below
+    cImg = computeImaginaryPartFromY(y)
+
+    # And we'll start z at 0:
+
+    zReal = 0
+    zImg = 0
+
+    # Remember our count:
+
+    count = 0
+    MAXCOUNT = 1000  # how high we're willing to go
+
+    # We want to count up until we break out of the radius 2 barrier, or
+    # until we hit our count limit, which I've chosen to be 1000 in this
+    # example:
+
+    while (zReal*zReal + zImg*zImg <= 2*2) AND (count < MAXCOUNT):
+
+        # compute the next iteration's values:
+        nextZReal = zReal*zReal - zImg*zImg + cReal
+        nextZImg = 2 * zReal * zImg + cImg
+
+        zReal = nextZReal
+        zImg = nextZImg
+
+        count = count + 1
+
+    # Out of the loop, let's check the results.  If we hit MAXCOUNT,
+    # then it's IN the Set, and we'll color it black:
+
+    if (count == MAXCOUNT):
+        # in the set
+        color = black
+    else:
+        # NOT in the set
+        color = mapCountToColor(count)  # [discussed below]
+
+    # Finally, draw the pixel:
+    setPixel(x, y, color)
