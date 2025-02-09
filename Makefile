@@ -1,6 +1,6 @@
 PRG = fractol 
 #MLXFILESO = $(MLXFILES:.c=.o)
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS =
 FRACTOL = fractol.c
 all : $(PRG)
 
