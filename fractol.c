@@ -6,7 +6,7 @@
 /*   By: ibennaje <ibennaje@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/04 23:07:00 by ibennaje          #+#    #+#             */
-/*   Updated: 2025/02/09 22:14:16 by ibennaje         ###   ########.fr       */
+/*   Updated: 2025/02/14 16:27:52 by ibennaje         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ void img_pix_put(t_img *img, int x, int y, int color)
 	}
 }
 
-void mandelbort_set(t_vars * vars)
+void mandelbort_set(t_vars *vars)
 {
 	int x, y, n;
 	y = 0;
@@ -112,7 +112,7 @@ void mandelbort_set(t_vars * vars)
 	}
 }
 
-void cords_init(t_cords *cords , int zoomchecker)
+void cords_init(t_cords *cords, int zoomchecker)
 {
 	if (zoomchecker == 1)
 		cords->zoom = 1;
@@ -121,25 +121,45 @@ void cords_init(t_cords *cords , int zoomchecker)
 
 	cords->ImageHeight = 900;
 	cords->ImageWidth = 900;
-	cords->MaxRe = 0.47 * cords->zoom;
-	cords->MinRe = -2.0 * cords->zoom;
-	cords->MinIm = -1.2 * cords->zoom;
-	cords->MaxIm = 1.12 * cords->zoom;
+	cords->MaxRe = 1.0;
+	cords->MinRe = -2.0;
+	cords->MinIm = -1.2;
+	cords->MaxIm = 1.12;
+	printf("%f \n%f \n%f \n%f \n", cords->MinRe, cords->MaxRe, cords->MinIm, cords->MaxIm);
 	cords->Re_factor = ((cords->MaxRe - cords->MinRe) / (cords->ImageWidth - 1));
 	cords->Im_factor = ((cords->MaxIm - cords->MinIm) / (cords->ImageHeight - 1));
 	cords->MaxIterations = 30;
 }
 
-int mouse_hook(int keycode, t_vars * vars)
+int zoom_in(int keycode, t_vars *vars)
 {
-	mlx_destroy_image(vars->fractal.mlx,vars->fractal.img.mlx_img);
-	vars->fractal.img.mlx_img = mlx_new_image(vars->fractal.mlx, vars->cords.ImageWidth, vars->cords.ImageHeight);
-	vars->fractal.img.addr = mlx_get_data_addr(vars->fractal.img.mlx_img, &vars->fractal.img.bpp, &vars->fractal.img.line_len, &vars->fractal.img.endian);
-	cords_init(&vars->cords , keycode);
-	mandelbort_set(vars);
-	mlx_put_image_to_window(vars->fractal.mlx, vars->fractal.mlx_win, vars->fractal.img.mlx_img, 0, 0);
-	
-	printf("keycode = %d\n", keycode);
+	double range_re;
+	double range_im;
+	double zoom = 2.0;
+	void *old_image;
+	if (keycode == 4 )
+	{
+		printf("hello \n");
+		range_re = (vars->cords.MaxRe - vars->cords.MinRe) / zoom;
+		printf("stil no \n");
+		range_im = (vars->cords.MaxIm - vars->cords.MinIm) / zoom;
+		vars->cords.MinRe = -0.75 - ((range_re) / 2);
+		vars->cords.MaxRe = -0.75 + ((range_re) / 2);
+		vars->cords.MinIm = 0.1 - ((range_im) / 2);
+		vars->cords.MaxIm = 0.1 + ((range_im) / 2);
+		vars->cords.Re_factor = ((vars->cords.MaxRe - vars->cords.MinRe) / (vars->cords.ImageWidth - 1));
+		vars->cords.Im_factor = ((vars->cords.MaxIm - vars->cords.MinIm) / (vars->cords.ImageHeight - 1));
+		old_image = vars->fractal.img.mlx_img;
+		vars->fractal.img.mlx_img = mlx_new_image(vars->fractal.mlx, vars->cords.ImageWidth, vars->cords.ImageHeight);
+		vars->fractal.img.addr = mlx_get_data_addr(vars->fractal.img.mlx_img,
+												   &vars->fractal.img.bpp, &vars->fractal.img.line_len,
+												   &vars->fractal.img.endian);
+		if (old_image)
+			mlx_destroy_image(vars->fractal.mlx, old_image);
+		mandelbort_set(vars);
+		mlx_put_image_to_window(vars->fractal.mlx, vars->fractal.mlx_win,
+								vars->fractal.img.mlx_img, 0, 0);
+	}
 	return (1);
 }
 
@@ -150,17 +170,13 @@ int main(void)
 
 	vars.fractal.mlx = mlx_init();
 	vars.fractal.mlx_win = mlx_new_window(vars.fractal.mlx, 900, 900, "Hello world!");
-	cords_init(&vars.cords ,1);
+	cords_init(&vars.cords, 1);
 	vars.fractal.img.mlx_img = mlx_new_image(vars.fractal.mlx, vars.cords.ImageWidth, vars.cords.ImageHeight);
 	vars.fractal.img.addr = mlx_get_data_addr(vars.fractal.img.mlx_img, &vars.fractal.img.bpp, &vars.fractal.img.line_len, &vars.fractal.img.endian);
 	mandelbort_set(&vars);
 	vars.ini = 1;
 	mlx_put_image_to_window(vars.fractal.mlx, vars.fractal.mlx_win, vars.fractal.img.mlx_img, 0, 0);
-	printf("initialize \n");
-	mlx_mouse_hook(vars.fractal.mlx_win, mouse_hook, &vars);
-	sleep(1);
-	mouse_hook(4,&vars);
-	sleep(1);
-	mouse_hook(4,&vars);
+
+	mlx_mouse_hook(vars.fractal.mlx_win, &zoom_in, &vars);
 	mlx_loop(vars.fractal.mlx);
 }
