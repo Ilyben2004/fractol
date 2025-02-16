@@ -6,7 +6,7 @@
 /*   By: ibennaje <ibennaje@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/04 23:07:00 by ibennaje          #+#    #+#             */
-/*   Updated: 2025/02/15 15:49:52 by ibennaje         ###   ########.fr       */
+/*   Updated: 2025/02/16 17:15:31 by ibennaje         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,17 @@ void img_pix_put(t_img *img, int x, int y, int color)
 	}
 }
 
+int get_color(int iterations)
+{
+	int offset;
+
+	if (iterations == 0)
+		iterations =1;
+
+	offset = iterations * 100000;
+	return (iterations * offset );
+}
+
 void mandelbort_set(t_vars *vars)
 {
 	int x, y, n;
@@ -85,7 +96,7 @@ void mandelbort_set(t_vars *vars)
 	{
 		double c_im = vars->cords.MaxIm - y * vars->cords.Im_factor;
 		x = 0;
-		while (x < vars->cords.ImageHeight)
+		while (x < vars->cords.ImageWidth)
 		{
 			double c_re = vars->cords.MinRe + x * vars->cords.Re_factor;
 
@@ -108,13 +119,11 @@ void mandelbort_set(t_vars *vars)
 			if (isInside)
 			{
 
-				img_pix_put(&(vars->fractal.img), x, y, vars->cords.color * 16737894);
+				img_pix_put(&(vars->fractal.img), x, y, 0xffffff);
 			}
 			else
 			{
-				if (vars->cords.color == 0)
-					vars->cords.color = 100;
-				img_pix_put(&(vars->fractal.img), x, y, vars->cords.color * 50);
+				img_pix_put(&(vars->fractal.img), x, y, get_color(vars->cords.color));
 			}
 			x++;
 		}
@@ -129,14 +138,17 @@ void julia_set(t_vars *vars)
 
 	while (y < vars->cords.ImageHeight)
 	{
+		double Z_im = vars->cords.MaxIm - y * vars->cords.Im_factor;
 		x = 0;
-		while (x < vars->cords.ImageHeight)
+		while (x < vars->cords.ImageWidth)
 		{
-			double c_re = -0.8, c_im = 0;
+			double Z_re = vars->cords.MinRe + x * vars->cords.Re_factor;
 
-			double Z_re = c_re, Z_im = c_im;
+			double c_re = 0.35;
+			double c_im = 0.35;
 			int isInside = 1;
 			n = 0;
+
 			while (n < vars->cords.MaxIterations)
 			{
 				double Z_re2 = Z_re * Z_re, Z_im2 = Z_im * Z_im;
@@ -150,10 +162,14 @@ void julia_set(t_vars *vars)
 				vars->cords.color = n;
 				n++;
 			}
-			if (isInside)
-			{
 
+			if (isInside)
 				img_pix_put(&(vars->fractal.img), x, y, vars->cords.color * 16737894);
+			else
+			{
+				if (vars->cords.color == 0)
+					vars->cords.color = 100;
+				img_pix_put(&(vars->fractal.img), x, y, vars->cords.color * 50);
 			}
 			x++;
 		}
@@ -189,7 +205,7 @@ int zoom_in(int keycode, int x, int y, t_vars *vars)
 	double zoom = 1.1;
 	void *old_image;
 
-	printf("(%d  , %d) \n",x,y);
+	printf("(%d  , %d) \n", x, y);
 	if (keycode == 4 || keycode == 5)
 	{
 		if (keycode == 4)
@@ -223,10 +239,10 @@ int zoom_in(int keycode, int x, int y, t_vars *vars)
 	return (1);
 }
 
-int destroy_window(t_vars * vars)
+int destroy_window(t_vars *vars)
 {
 	mlx_destroy_image(vars->fractal.mlx, vars->fractal.img.mlx_img);
-	mlx_destroy_window(vars->fractal.mlx , vars->fractal.mlx_win);
+	mlx_destroy_window(vars->fractal.mlx, vars->fractal.mlx_win);
 }
 
 int shift_view(int keycode, t_vars *vars)
@@ -253,7 +269,7 @@ int shift_view(int keycode, t_vars *vars)
 		vars->cords.MinIm -= (vars->cords.MaxIm - vars->cords.MinIm) / 20;
 		vars->cords.MaxIm -= (vars->cords.MaxIm - vars->cords.MinIm) / 20;
 	}
-	else if(keycode == 65307)
+	else if (keycode == 65307)
 	{
 		destroy_window(vars);
 		exit(0);
@@ -273,14 +289,17 @@ int shift_view(int keycode, t_vars *vars)
 							vars->fractal.img.mlx_img, 0, 0);
 	return (1);
 }
-
+int close_it(int code, t_vars *mlx)
+{
+	printf("hna fin dir free\n");
+}
 int main(void)
 {
 
 	t_vars vars;
 
 	vars.fractal.mlx = mlx_init();
-	vars.fractal.mlx_win = mlx_new_window(vars.fractal.mlx, 600 , 600, "Hello world!");
+	vars.fractal.mlx_win = mlx_new_window(vars.fractal.mlx, 600, 600, "Hello world!");
 	cords_init(&vars.cords, 1);
 	vars.fractal.img.mlx_img = mlx_new_image(vars.fractal.mlx, vars.cords.ImageWidth, vars.cords.ImageHeight);
 	vars.fractal.img.addr = mlx_get_data_addr(vars.fractal.img.mlx_img, &vars.fractal.img.bpp, &vars.fractal.img.line_len, &vars.fractal.img.endian);
@@ -288,6 +307,7 @@ int main(void)
 	vars.ini = 1;
 	mlx_put_image_to_window(vars.fractal.mlx, vars.fractal.mlx_win, vars.fractal.img.mlx_img, 0, 0);
 	mlx_mouse_hook(vars.fractal.mlx_win, &zoom_in, &vars);
+	mlx_hook(vars.fractal.mlx_win, 17, 0, destroy_window, &vars);
 	mlx_key_hook(vars.fractal.mlx_win, shift_view, &vars);
 	mlx_loop(vars.fractal.mlx);
 }
