@@ -6,7 +6,7 @@
 /*   By: ibennaje <ibennaje@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/04 23:07:00 by ibennaje          #+#    #+#             */
-/*   Updated: 2025/02/17 06:07:28 by ibennaje         ###   ########.fr       */
+/*   Updated: 2025/02/17 06:16:25 by ibennaje         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 typedef struct s_img
 {
@@ -284,6 +285,50 @@ int key_hook(int keycode, t_vars *vars)
 	return (1);
 }
 
+void perpendicular_set(t_vars *vars)
+{
+    t_compelxes complexes;
+
+    complexes.y = 0;
+    while (complexes.y < vars->cords.ImageHeight)
+    {
+        complexes.c_im = vars->cords.MaxIm - complexes.y * vars->cords.Im_factor;
+        complexes.x = 0;
+        while (complexes.x < vars->cords.ImageWidth)
+        {
+            complexes.c_re = vars->cords.MinRe + complexes.x * vars->cords.Re_factor;
+
+            complexes.z_re = 0;
+            complexes.z_im = 0;
+            complexes.n = 0;
+            complexes.isinside = 1;
+            
+            while (complexes.n < vars->cords.MaxIterations)
+            {
+                complexes.z_re2 = complexes.z_re * complexes.z_re;
+                complexes.z_im2 = complexes.z_im * complexes.z_im;
+                
+                if (complexes.z_re2 + complexes.z_im2 > 4)
+                {
+                    complexes.isinside = 0;
+                    break;
+                }
+                double z_re_temp = complexes.z_re;
+                complexes.z_re = (complexes.z_re2 - complexes.z_im2) + complexes.c_re;
+                complexes.z_im = -2.0 * fabs(z_re_temp) * complexes.z_im + complexes.c_im;
+                vars->cords.color = complexes.n;
+                complexes.n++;
+            }
+            if (complexes.isinside)
+                img_pix_put(&(vars->fractal.img), complexes.x, complexes.y, 0x000000);
+            else
+                img_pix_put(&(vars->fractal.img), complexes.x, complexes.y, get_color(vars->cords.color));
+            complexes.x++;
+        }
+        complexes.y++;
+    }
+}
+
 int main(int ac, char **av)
 {
 	t_vars vars;
@@ -292,6 +337,7 @@ int main(int ac, char **av)
 		vars.draw = mandelbort_set;
 	if (strcmp(av[1], "julia") == 0)
 		vars.draw = julia_set;
+	vars.draw = perpendicular_set;
 	vars.fractal.mlx = mlx_init();
 	vars.fractal.mlx_win = mlx_new_window(vars.fractal.mlx, 600, 600, "Julia Set");
 	cords_init(&vars.cords, 1);
