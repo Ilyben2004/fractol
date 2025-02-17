@@ -6,7 +6,7 @@
 /*   By: ibennaje <ibennaje@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/04 23:07:00 by ibennaje          #+#    #+#             */
-/*   Updated: 2025/02/17 05:58:32 by ibennaje         ###   ########.fr       */
+/*   Updated: 2025/02/17 06:07:28 by ibennaje         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,6 @@ int get_color(int iterations)
 	return (iterations * offset);
 }
 
-
 void mandelbort_helper(t_vars *vars, t_compelxes *compelxes)
 {
 	while (compelxes->n < vars->cords.MaxIterations)
@@ -138,58 +137,25 @@ void mandelbort_set(t_vars *vars)
 
 void julia_set(t_vars *vars)
 {
-	int x, y, n;
-	// Julia set constants - these give a nice default shape
-	double c_re = -0.7;
-	double c_im = 0.27015;
+	t_compelxes compelxes;
+	compelxes.c_re = -0.7;
+	compelxes.c_im = 0.27015;
 
-	y = 0;
-	while (y < vars->cords.ImageHeight)
+	compelxes.y = -1;
+
+	while (++compelxes.y < vars->cords.ImageHeight)
 	{
-		x = 0;
-		while (x < vars->cords.ImageWidth)
+		compelxes.x = -1;
+		while (++compelxes.x < vars->cords.ImageWidth)
 		{
-			// Calculate initial complex number using the same scaling as Mandelbrot
-			double Z_re = vars->cords.MinRe + x * vars->cords.Re_factor;
-			double Z_im = vars->cords.MaxIm - y * vars->cords.Im_factor;
-
-			int isInside = 1;
-			n = 0;
-			while (n < vars->cords.MaxIterations)
-			{
-				double Z_re2 = Z_re * Z_re;
-				double Z_im2 = Z_im * Z_im;
-
-				// Check if point escapes
-				if (Z_re2 + Z_im2 > 4)
-				{
-					isInside = 0;
-					break;
-				}
-
-				// Calculate next iteration
-				double Z_re_temp = Z_re;
-				Z_re = Z_re2 - Z_im2 + c_re; // Real part: z^2 + c
-				Z_im = 2 * Z_re_temp * Z_im + c_im;
-				// Imaginary part : z ^ 2 + c /
-
-				// Store iteration count for coloring
-				vars->cords.color = n;
-				n++;
-			}
-
-			// Color the pixel based on whether it's inside the set and iteration count
-			if (isInside)
-			{
-				img_pix_put(&(vars->fractal.img), x, y, 0x000000);
-			}
-			else
-			{
-				img_pix_put(&(vars->fractal.img), x, y, get_color(vars->cords.color));
-			}
-			x++;
+			compelxes.z_re = vars->cords.MinRe + compelxes.x * vars->cords.Re_factor;
+			compelxes.z_im = vars->cords.MaxIm - compelxes.y * vars->cords.Im_factor;
+			compelxes.isinside = 1;
+			compelxes.n = 0;
+			mandelbort_helper(vars, &compelxes);
+			if (!compelxes.isinside)
+				img_pix_put(&(vars->fractal.img), compelxes.x, compelxes.y, get_color(vars->cords.color));
 		}
-		y++;
 	}
 }
 
@@ -294,7 +260,7 @@ int key_hook(int keycode, t_vars *vars)
 {
 	void *old_image;
 
-	if (key_hook_helper(vars , keycode))
+	if (key_hook_helper(vars, keycode))
 	{
 		vars->cords.cx = (vars->cords.MaxRe + vars->cords.MinRe) / 2;
 		vars->cords.cy = (vars->cords.MaxIm + vars->cords.MinIm) / 2;
