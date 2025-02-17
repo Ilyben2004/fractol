@@ -6,7 +6,7 @@
 /*   By: ibennaje <ibennaje@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/04 23:07:00 by ibennaje          #+#    #+#             */
-/*   Updated: 2025/02/16 17:15:31 by ibennaje         ###   ########.fr       */
+/*   Updated: 2025/02/17 04:54:41 by ibennaje         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef struct s_img
 {
@@ -50,42 +51,64 @@ typedef struct s_cords
 
 } t_cords;
 
+typedef struct  s_compelxes
+{
+	int	x;
+	int	y;
+	int	n;
+	int z_re;
+	int z_im;
+	int c_re;
+	int c_im;
+	int z_re2;
+	int z_im2;
+
+	/* data */
+} t_compelxes ;
+
+
 typedef struct s_vars
 {
 	t_cords cords;
 	t_fractal fractal;
+	void (*draw)(struct s_vars *vars);
 	int ini;
 } t_vars;
 
-void img_pix_put(t_img *img, int x, int y, int color)
+void	img_pix_put(t_img *img, int x, int y, int color)
 {
-	char *pixel;
-	int i;
+    char    *pixel;
 
-	i = img->bpp - 8;
-	pixel = img->addr + (y * img->line_len + x * (img->bpp / 8));
-	while (i >= 0)
-	{
-		/* big endian, MSB is the leftmost bit */
-		if (img->endian != 0)
-			*pixel++ = (color >> i) & 0xFF;
-		/* little endian, LSB is the leftmost bit */
-		else
-			*pixel++ = (color >> (img->bpp - 8 - i)) & 0xFF;
-		i -= 8;
-	}
+    pixel = img->addr + (y * img->line_len + x * (img->bpp / 8));
+    *(int *)pixel = color;
 }
+
+
 
 int get_color(int iterations)
 {
 	int offset;
 
 	if (iterations == 0)
-		iterations =1;
+		iterations = 1;
 
 	offset = iterations * 100000;
-	return (iterations * offset );
+	return (iterations * offset);
 }
+
+// generated function just to see it more pretty
+// int get_color(int iterations)
+// {
+//     if (iterations == 0)
+//         return 0x000000;  // Black
+
+//     // Create a smooth color gradient
+//     int r = (iterations * 7) % 255;
+//     int g = (iterations * 5) % 255;
+//     int b = (iterations * 11) % 255;
+
+//     return (r << 16) | (g << 8) | b;
+// }
 
 void mandelbort_set(t_vars *vars)
 {
@@ -116,13 +139,9 @@ void mandelbort_set(t_vars *vars)
 				vars->cords.color = n;
 				n++;
 			}
-			if (isInside)
+			if (!isInside)
 			{
 
-				img_pix_put(&(vars->fractal.img), x, y, 0xffffff);
-			}
-			else
-			{
 				img_pix_put(&(vars->fractal.img), x, y, get_color(vars->cords.color));
 			}
 			x++;
@@ -133,48 +152,60 @@ void mandelbort_set(t_vars *vars)
 
 void julia_set(t_vars *vars)
 {
-	int x, y, n;
-	y = 0;
+    int x, y, n;
+    // Julia set constants - these give a nice default shape
+    double c_re = -0.7; 
+    double c_im = 0.27015;
 
-	while (y < vars->cords.ImageHeight)
-	{
-		double Z_im = vars->cords.MaxIm - y * vars->cords.Im_factor;
-		x = 0;
-		while (x < vars->cords.ImageWidth)
-		{
-			double Z_re = vars->cords.MinRe + x * vars->cords.Re_factor;
+    y = 0;
+    while (y < vars->cords.ImageHeight)
+    {
+        x = 0;
+        while (x < vars->cords.ImageWidth)
+        {
+            // Calculate initial complex number using the same scaling as Mandelbrot
+            double Z_re = vars->cords.MinRe + x * vars->cords.Re_factor;
+            double Z_im = vars->cords.MaxIm - y * vars->cords.Im_factor;
+            
+            int isInside = 1;
+            n = 0;
 
-			double c_re = 0.35;
-			double c_im = 0.35;
-			int isInside = 1;
-			n = 0;
+            // Iterate using the Julia set formula: z = z^2 + c
+            while (n < vars->cords.MaxIterations)
+            {
+                double Z_re2 = Z_re * Z_re;
+                double Z_im2 = Z_im * Z_im;
+                
+                // Check if point escapes
+                if (Z_re2 + Z_im2 > 4)
+                {
+                    isInside = 0;
+                    break;
+                }
+                
+                // Calculate next iteration
+                double Z_re_temp = Z_re;
+                Z_re = Z_re2 - Z_im2 + c_re;      // Real part: z^2 + c
+                Z_im = 2 * Z_re_temp * Z_im + c_im; // Imaginary part: z^2 + c
+                
+                // Store iteration count for coloring
+                vars->cords.color = n;
+                n++;
+            }
 
-			while (n < vars->cords.MaxIterations)
-			{
-				double Z_re2 = Z_re * Z_re, Z_im2 = Z_im * Z_im;
-				if (Z_re2 + Z_im2 > 4)
-				{
-					isInside = 0;
-					break;
-				}
-				Z_im = 2 * Z_re * Z_im + c_im;
-				Z_re = Z_re2 - Z_im2 + c_re;
-				vars->cords.color = n;
-				n++;
-			}
-
-			if (isInside)
-				img_pix_put(&(vars->fractal.img), x, y, vars->cords.color * 16737894);
-			else
-			{
-				if (vars->cords.color == 0)
-					vars->cords.color = 100;
-				img_pix_put(&(vars->fractal.img), x, y, vars->cords.color * 50);
-			}
-			x++;
-		}
-		y++;
-	}
+            // Color the pixel based on whether it's inside the set and iteration count
+            if (isInside)
+            {
+                img_pix_put(&(vars->fractal.img), x, y, 0x000000);
+            }
+            else
+            {
+                img_pix_put(&(vars->fractal.img), x, y, get_color(vars->cords.color));
+            }
+            x++;
+        }
+        y++;
+    }
 }
 
 void cords_init(t_cords *cords, int zoomchecker)
@@ -186,15 +217,14 @@ void cords_init(t_cords *cords, int zoomchecker)
 
 	cords->ImageHeight = 600;
 	cords->ImageWidth = 600;
-	cords->MaxRe = 1.0;
+	cords->MaxRe = 2.0;
 	cords->MinRe = -2.0;
-	cords->MinIm = -1.2;
-	cords->MaxIm = 1.12;
+	cords->MinIm = -2.0;
+	cords->MaxIm = 2.0;
 	cords->cx = 0;
 	cords->cy = 0;
-	printf("%f \n%f \n%f \n%f \n", cords->MinRe, cords->MaxRe, cords->MinIm, cords->MaxIm);
-	cords->Re_factor = ((cords->MaxRe - cords->MinRe) / (cords->ImageWidth - 1));
-	cords->Im_factor = ((cords->MaxIm - cords->MinIm) / (cords->ImageHeight - 1));
+	cords->Re_factor = (cords->MaxRe - cords->MinRe) / (cords->ImageWidth - 1);
+	cords->Im_factor = (cords->MaxIm - cords->MinIm) / (cords->ImageHeight - 1);
 	cords->MaxIterations = 100;
 }
 
@@ -212,6 +242,7 @@ int zoom_in(int keycode, int x, int y, t_vars *vars)
 		{
 			range_re = (vars->cords.MaxRe - vars->cords.MinRe) / zoom;
 			range_im = (vars->cords.MaxIm - vars->cords.MinIm) / zoom;
+			printf("%f is the distance \n", vars->cords.MaxRe - vars->cords.MinRe);
 		}
 		else
 		{
@@ -232,7 +263,7 @@ int zoom_in(int keycode, int x, int y, t_vars *vars)
 												   &vars->fractal.img.endian);
 		if (old_image)
 			mlx_destroy_image(vars->fractal.mlx, old_image);
-		mandelbort_set(vars);
+		vars->draw(vars);
 		mlx_put_image_to_window(vars->fractal.mlx, vars->fractal.mlx_win,
 								vars->fractal.img.mlx_img, 0, 0);
 	}
@@ -284,26 +315,26 @@ int shift_view(int keycode, t_vars *vars)
 											   &vars->fractal.img.endian);
 	if (old_image)
 		mlx_destroy_image(vars->fractal.mlx, old_image);
-	mandelbort_set(vars);
+	vars->draw(vars);
 	mlx_put_image_to_window(vars->fractal.mlx, vars->fractal.mlx_win,
 							vars->fractal.img.mlx_img, 0, 0);
 	return (1);
 }
-int close_it(int code, t_vars *mlx)
-{
-	printf("hna fin dir free\n");
-}
-int main(void)
-{
 
+int main(int ac, char **av)
+{
 	t_vars vars;
 
+	if (strcmp(av[1], "mandelbrot") == 0)
+		vars.draw = mandelbort_set;
+	if (strcmp(av[1], "julia") == 0)
+		vars.draw = julia_set;
 	vars.fractal.mlx = mlx_init();
-	vars.fractal.mlx_win = mlx_new_window(vars.fractal.mlx, 600, 600, "Hello world!");
+	vars.fractal.mlx_win = mlx_new_window(vars.fractal.mlx, 600, 600, "Julia Set");
 	cords_init(&vars.cords, 1);
 	vars.fractal.img.mlx_img = mlx_new_image(vars.fractal.mlx, vars.cords.ImageWidth, vars.cords.ImageHeight);
 	vars.fractal.img.addr = mlx_get_data_addr(vars.fractal.img.mlx_img, &vars.fractal.img.bpp, &vars.fractal.img.line_len, &vars.fractal.img.endian);
-	mandelbort_set(&vars);
+	vars.draw(&vars);
 	vars.ini = 1;
 	mlx_put_image_to_window(vars.fractal.mlx, vars.fractal.mlx_win, vars.fractal.img.mlx_img, 0, 0);
 	mlx_mouse_hook(vars.fractal.mlx_win, &zoom_in, &vars);
