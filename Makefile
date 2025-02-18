@@ -1,9 +1,14 @@
 PRG = fractol 
 #MLXFILESO = $(MLXFILES:.c=.o)
-CFLAGS =
+CFLAGS = -lmlx -lXext -lX11 -lm
 FRACTOL = fractol.c
+SRCS = fractols.c render.c utils.c 
+OSRCS = $(SRCS:.c=.o)
 all : $(PRG)
 
 
-$(PRG) : $(FRACTOL)
-	cc $(FRACTOL) $(CFLAGS) -lmlx -lXext -lX11 -lm   -o $(PRG) 
+$(PRG) : $(FRACTOL) $(OSRCS)
+	cc $(FRACTOL)  $(CFLAGS)    $(OSRCS) -o $(PRG)
+
+clean :
+	rm -rf $(OSRCS)
