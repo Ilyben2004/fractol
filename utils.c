@@ -45,4 +45,11 @@ int	destroy_window(t_vars *vars)
 	mlx_destroy_window(vars->fractal.mlx, vars->fractal.mlx_win);
 	mlx_destroy_display(vars->fractal.mlx);
 	free(vars->fractal.mlx);
+	return(1);
+}
+
+int destroy_window_helper (int code , t_vars *vars)
+{
+	code++;
+	return (destroy_window(vars));
 }

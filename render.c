@@ -89,6 +89,8 @@ int	zoom(int keycode, int x, int y, t_vars *vars)
 	double	range_im;
 	void	*old_image;
 
+	x++;
+	y++;
 	if (keycode == 4 || keycode == 5)
 	{
 		range_zoom_calculator(keycode, &range_re, &range_im, vars);
@@ -104,4 +106,5 @@ int	zoom(int keycode, int x, int y, t_vars *vars)
 		mlx_put_image_to_window(vars->fractal.mlx, vars->fractal.mlx_win,
 			vars->fractal.img.mlx_img, 0, 0);
 	}
+	return(1);
 }

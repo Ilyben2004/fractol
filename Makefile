@@ -1,6 +1,6 @@
 CC = cc
 
-CFLAGS = 
+CFLAGS = -Wall -Wextra -Werror 
 
 NAME = fractol
 
@@ -8,7 +8,7 @@ HEADER = fractol.h
 
 MINILIBXDIR = minilibx-linux
 
-SRCS = render.c utils.c fractols.c fractol.c
+SRCS = render.c utils.c fractols.c fractol.c libft.c parsing.c
 OBJS = $(SRCS:.c=.o)
 
 MLX = $(MINILIBXDIR)/libmlx.a

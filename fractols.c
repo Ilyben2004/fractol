@@ -49,8 +49,8 @@ void	julia_set(t_vars *vars)
 {
 	t_compelxes	compelxes;
 
-	compelxes.c_re = -0.7;
-	compelxes.c_im = 0.27015;
+	compelxes.c_re = vars->cords.julia_reel;
+	compelxes.c_im = vars->cords.julia_img;
 	compelxes.y = -1;
 	while (++compelxes.y < vars->cords.image_height)
 	{

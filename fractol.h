@@ -8,8 +8,8 @@
 # include <string.h>
 # include <unistd.h>
 
-# define HEIGHT 600
-# define WIDTH 600
+# define HEIGHT 700
+# define WIDTH 700
 typedef struct s_img
 {
 	void		*mlx_img;
@@ -41,6 +41,8 @@ typedef struct s_cords
 	double		zoom;
 	double		cx;
 	double		cy;
+	double		julia_reel;
+	double		julia_img;
 
 }				t_cords;
 
@@ -79,5 +81,15 @@ int				destroy_window(t_vars *vars);
 int				key_hook_helper(t_vars *vars, int keycode);
 int				key_hook(int keycode, t_vars *vars);
 void			perpendicular_set(t_vars *vars);
+char			*ft_strchr(const char *s, int c);
+int     		ft_isdigit(int c);
+long     		ft_atoi(const char *str);
+char    		*ft_substr(char const *s, unsigned int start, size_t len);
+size_t  		ft_strlen(const char *s);
+void 			parse(int ac , char **av , t_vars * vars);
+int 			destroy_window_helper (int code , t_vars *vars);
+
+
+
 
 #endif

@@ -1,7 +1,8 @@
 {
   "files.associations": {
     "stdio.h": "c",
-    "fractol.h": "c"
+    "fractol.h": "c",
+    "numbers": "c"
   },
   "C_Cpp.errorSquiggles": "disabled",
   "C_Cpp_Runner.cCompilerPath": "gcc",
