@@ -10,6 +10,8 @@
 
 # define HEIGHT 700
 # define WIDTH 700
+# define  UP  65363
+
 typedef struct s_img
 {
 	void		*mlx_img;
@@ -37,12 +39,12 @@ typedef struct s_cords
 	double		re_helper;
 	double		im_helper;
 	int			max_iterations;
-	int			color;
 	double		zoom;
 	double		cx;
 	double		cy;
 	double		julia_reel;
 	double		julia_img;
+	int			color_shift;
 
 }				t_cords;
 
@@ -69,7 +71,7 @@ typedef struct s_vars
 }				t_vars;
 
 void			img_pix_put(t_img *img, int x, int y, int color);
-int				get_color(int iterations);
+int				get_color(int iterations, t_vars * vars);
 void			mandelbort_helper(t_vars *vars, t_compelxes *compelxes);
 void			mandelbort_set(t_vars *vars);
 void			julia_set(t_vars *vars);

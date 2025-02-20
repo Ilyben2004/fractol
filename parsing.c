@@ -1,5 +1,11 @@
 #include "fractol.h"
 
+int ft_free(char * is_float ,char * intpart)
+{
+    if(is_float)
+        free(intpart);
+    return (1);
+}
 void error_exit()
 {
     write(1, "********************** ibennaje fractol **********************\n", 64);
@@ -32,12 +38,9 @@ int is_number(char *num)
     if (num[i] == '+' || num[i] == '-')
         i++;
     is_float = ft_strchr(num, '.');
-    while (num[i])
-    {
-        if (!ft_isdigit(num[i]) && &num[i] != is_float)
+    while (num[i++])
+        if (!ft_isdigit(num[i - 1]) && &num[i - 1] != is_float)
             error_exit();
-        i++;
-    }
     if (is_float)
         intpart = ft_substr(num, 0, is_float - num);
     else
@@ -48,9 +51,7 @@ int is_number(char *num)
             free(intpart);
         error_exit();
     }
-    if (is_float)
-        free(intpart);
-    return (1);
+    return (ft_free(is_float , intpart));
 }
 
 int number_len(long number)
@@ -65,68 +66,45 @@ int number_len(long number)
     }
     return (i);
 }
-// void set_double_helper(char *float_part_s)
-// {
-//     int free_s;
+void set_double_helper(char *float_part_s, double *d, long int_to_float, char *dbl)
+{
+    int free_s;
+    int float_len;
+    long float_part;
+    int i;
 
-//     free_s = 0;
-//     if (float_part_s)
-//     {
-//         float_part_s++;
-//         if (ft_strlen(float_part_s) > 10)
-//         {
-//             free_s = 1;
-//             float_part_s = ft_substr(float_part_s, 0, 10);
-//         }
-//         while (*float_part_s == '0')
-//         {
-//             int_to_float *= 10;
-//             float_part_s++;
-//         }
-//         float_part = ft_atoi(float_part_s);
-//         float_len = number_len(float_part);
-//         while (float_len-- != 0)
-//             int_to_float *= 10;
-//         if (dbl[0] == '-')
-//             float_part = -float_part;
-//         *d += ((double)float_part / (double)int_to_float);
-//         if (free_s)
-//             free(float_part_s - 10);
-//     }
-// }
+    i = -1;
+    free_s = 0;
+    if (ft_strlen(float_part_s) > 10)
+    {
+        free_s = 1;
+        float_part_s = ft_substr(float_part_s, 0, 10);
+    }
+    while (float_part_s[++i] == '0')
+        int_to_float *= 10;;
+    float_part = ft_atoi(float_part_s + i);
+    printf("float part = %ld\n int_to_float = %ld \n" , float_part , int_to_float);
+    float_len = number_len(float_part);
+    while (float_len-- != 0)
+        int_to_float *= 10;
+    printf("float part = %ld\n int_to_float = %ld \n" , float_part , int_to_float);
+    if (dbl[0] == '-')
+        float_part = -float_part;
+    *d += ((double)float_part / (double)int_to_float);
+    if (free_s)
+        free(float_part_s);
+}
+
 void set_double(double *d, char *dbl)
 {
     char *float_part_s;
     long int_to_float;
-    long float_part;
-    int float_len;
 
     int_to_float = 1;
     *d = ft_atoi(dbl);
     float_part_s = ft_strchr(dbl, '.');
-    if (float_part_s)
-    {
-        float_part_s++;
-        if (ft_strlen(float_part_s) > 10)
-        {
-            free_s = 1;
-            float_part_s = ft_substr(float_part_s, 0, 10);
-        }
-        while (*float_part_s == '0')
-        {
-            int_to_float *= 10;
-            float_part_s++;
-        }
-        float_part = ft_atoi(float_part_s);
-        float_len = number_len(float_part);
-        while (float_len-- != 0)
-            int_to_float *= 10;
-        if (dbl[0] == '-')
-            float_part = -float_part;
-        *d += ((double)float_part / (double)int_to_float);
-        if (free_s)
-            free(float_part_s - 10);
-    }
+    if (float_part_s++)
+        set_double_helper(float_part_s, d, int_to_float, dbl);
 }
 void julia_number_set(t_vars *vars, char *reel, char *img)
 {
@@ -141,9 +119,9 @@ void julia_number_set(t_vars *vars, char *reel, char *img)
 
 void parse(int ac, char **av, t_vars *vars)
 {
-    if (ac == 1)
-        exit(0);
-    else if (ft_strcmp(av[1], "mandelbrot") == 0)
+    if (ac == 1 || ac > 4)
+        error_exit();
+    else if (ac == 2 && ft_strcmp(av[1], "mandelbrot") == 0)
         vars->draw = mandelbort_set;
     else if (ft_strcmp(av[1], "julia") == 0)
     {
@@ -158,7 +136,7 @@ void parse(int ac, char **av, t_vars *vars)
         else
             error_exit();
     }
-    else if (ft_strcmp(av[1], "perpendicular") == 0)
+    else if (ac == 2 && ft_strcmp(av[1], "perpendicular") == 0)
         vars->draw = perpendicular_set;
     else
         error_exit();

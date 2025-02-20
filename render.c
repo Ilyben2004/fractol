@@ -1,32 +1,47 @@
 #include "fractol.h"
 
-int	key_hook_helper(t_vars *vars, int keycode)
+
+int shift_color_helper(t_vars * vars , int keycode)
 {
-	if (keycode == 65363)
+	if (keycode == 99)
 	{
-		vars->cords.min_re += (vars->cords.max_re - vars->cords.min_re) / 20;
-		vars->cords.max_re += (vars->cords.max_re - vars->cords.min_re) / 20;
-		return (1);
+		vars->cords.color_shift += 5;
+		return (3);
 	}
-	else if (keycode == 65361)
+	if (keycode == 118)
 	{
-		vars->cords.min_re -= (vars->cords.max_re - vars->cords.min_re) / 20;
-		vars->cords.max_re -= (vars->cords.max_re - vars->cords.min_re) / 20;
-		return (1);
-	}
-	else if (keycode == 65362)
-	{
-		vars->cords.min_im += (vars->cords.max_im - vars->cords.min_im) / 20;
-		vars->cords.max_im += (vars->cords.max_im - vars->cords.min_im) / 20;
-		return (1);
-	}
-	else if (keycode == 65364)
-	{
-		vars->cords.min_im -= (vars->cords.max_im - vars->cords.min_im) / 20;
-		vars->cords.max_im -= (vars->cords.max_im - vars->cords.min_im) / 20;
+		vars->cords.color_shift -= 5;
 		return (1);
 	}
 	return (0);
+}
+int	key_hook_helper(t_vars *vars, int keycode)
+{
+	if (keycode == 65363) //right
+	{
+		vars->cords.min_re += (vars->cords.max_re - vars->cords.min_re) / 10;
+		vars->cords.max_re += (vars->cords.max_re - vars->cords.min_re) / 10;
+		return (1);
+	}
+	else if (keycode == 65361)//left 
+	{
+		vars->cords.min_re -= (vars->cords.max_re - vars->cords.min_re) / 10;
+		vars->cords.max_re -= (vars->cords.max_re - vars->cords.min_re) / 10;
+		return (1);
+	}
+	else if (keycode == 65362) // up
+	{
+		vars->cords.min_im += (vars->cords.max_im - vars->cords.min_im) / 10;
+		vars->cords.max_im += (vars->cords.max_im - vars->cords.min_im) / 10;
+		return (1);
+	}
+	else if (keycode == 65364)//down
+	{
+		vars->cords.min_im -= (vars->cords.max_im - vars->cords.min_im) / 10;
+		vars->cords.max_im -= (vars->cords.max_im - vars->cords.min_im) / 10;
+		return (1);
+	}
+	return (shift_color_helper(vars , keycode));
 }
 
 int	key_hook(int keycode, t_vars *vars)
@@ -62,24 +77,25 @@ void	range_zoom_calculator(int keycode, double *range_re, double *range_im,
 {
 	double	zoom;
 
-	zoom = 1.1;
+	zoom = 1.11;
 	if (keycode == 4)
 	{
-		*range_re = (vars->cords.max_re - vars->cords.min_re) / zoom;
-		*range_im = (vars->cords.max_im - vars->cords.min_im) / zoom;
+		printf("cx %f cy %f \n",vars->cords.cx , vars->cords.cy);
+		*range_re = fabs(vars->cords.max_re - vars->cords.min_re) / zoom;
+		*range_im = fabs(vars->cords.max_im - vars->cords.min_im)/ zoom;
 	}
 	else
 	{
-		*range_re = (vars->cords.max_re - vars->cords.min_re) * zoom;
-		*range_im = (vars->cords.max_im - vars->cords.min_im) * zoom;
+		*range_re += fabs(vars->cords.max_re - vars->cords.min_re) * zoom;
+		*range_im += fabs(vars->cords.max_im - vars->cords.min_im)* zoom;
 	}
 	vars->cords.min_re = vars->cords.cx - ((*range_re) / 2);
 	vars->cords.max_re = vars->cords.cx + ((*range_re) / 2);
 	vars->cords.min_im = vars->cords.cy - ((*range_im) / 2);
 	vars->cords.max_im = vars->cords.cy + ((*range_im) / 2);
-	vars->cords.re_helper = ((vars->cords.max_re - vars->cords.min_re)
+	vars->cords.re_helper = (fabs(vars->cords.max_re - vars->cords.min_re)
 			/ (vars->cords.image_width - 1));
-	vars->cords.im_helper = ((vars->cords.max_im - vars->cords.min_im)
+	vars->cords.im_helper = (fabs(vars->cords.max_im - vars->cords.min_im)
 			/ (vars->cords.image_height - 1));
 }
 

@@ -14,7 +14,6 @@ void	mandelbort_helper(t_vars *vars, t_compelxes *compelxes)
 		compelxes->z_im = 2 * compelxes->z_re * compelxes->z_im
 			+ compelxes->c_im;
 		compelxes->z_re = compelxes->z_re2 - compelxes->z_im2 + compelxes->c_re;
-		vars->cords.color = compelxes->n;
 		compelxes->n++;
 	}
 }
@@ -40,7 +39,7 @@ void	mandelbort_set(t_vars *vars)
 			mandelbort_helper(vars, &compelxes);
 			if (!compelxes.isinside)
 				img_pix_put(&(vars->fractal.img), compelxes.x, compelxes.y,
-					get_color(vars->cords.color));
+					get_color(compelxes.n , vars));
 		}
 	}
 }
@@ -66,7 +65,7 @@ void	julia_set(t_vars *vars)
 			mandelbort_helper(vars, &compelxes);
 			if (!compelxes.isinside)
 				img_pix_put(&(vars->fractal.img), compelxes.x, compelxes.y,
-					get_color(vars->cords.color));
+					get_color(compelxes.n , vars));
 		}
 	}
 }
@@ -87,7 +86,6 @@ void    perpendicular_helper(t_vars *vars, t_compelxes *compelxes)
             + compelxes->c_re;
         compelxes->z_im = -2.0 * fabs(z_re_temp) * compelxes->z_im 
             + compelxes->c_im;
-        vars->cords.color = compelxes->n;
         compelxes->n++;
     }
 }
@@ -113,7 +111,7 @@ void    perpendicular_set(t_vars *vars)
             perpendicular_helper(vars, &compelxes);
             if (!compelxes.isinside)
                 img_pix_put(&(vars->fractal.img), compelxes.x, compelxes.y,
-                    get_color(vars->cords.color));
+                    get_color(compelxes.n , vars));
         }
     }
 }

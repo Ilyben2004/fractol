@@ -16,7 +16,7 @@ MLX = $(MINILIBXDIR)/libmlx.a
 all: $(NAME)
 
 $(NAME): $(OBJS) $(MLX)
-	$(CC) $(CFLAGS) $(OBJS) -L$(MINILIBXDIR) -lmlx -lXext -lX11 -lm -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJS)  -lmlx -lXext -lX11 -lm $(MLX) -o $(NAME)
 
 $(MLX):
 	$(MAKE) -C $(MINILIBXDIR)
