@@ -3,11 +3,9 @@
 void img_pix_put(t_img *img, int x, int y, int color)
 {
 	char *pixel;
-	if ((x >= 0 && x < WIDTH) && (y >= 0 && y < HEIGHT))
-	{
+
 		pixel = img->addr + (y * img->line_len + x * (img->bpp / 8));
 		*(unsigned int *)pixel = color;
-	}
 }
 
 int get_color(int iterations , t_vars *vars) 
@@ -25,12 +23,8 @@ int get_color(int iterations , t_vars *vars)
     return (((r << 16) | (g << 8) | b));
 }
 
-void cords_init(t_cords *cords, int zoomchecker)
+void cords_init(t_cords *cords)
 {
-	if (zoomchecker == 1)
-		cords->zoom = 1;
-	if (zoomchecker == 4)
-		cords->zoom -= 0.1;
 	cords->image_height = HEIGHT;
 	cords->image_width = WIDTH;
 	cords->max_re = 2;

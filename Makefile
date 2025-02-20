@@ -8,7 +8,7 @@ HEADER = fractol.h
 
 MINILIBXDIR = minilibx-linux
 
-SRCS = render.c utils.c fractols.c fractol.c libft.c parsing.c
+SRCS = render.c utils.c fractols.c fractol.c libft.c parsing.c parsing2.c
 OBJS = $(SRCS:.c=.o)
 
 MLX = $(MINILIBXDIR)/libmlx.a
@@ -16,13 +16,11 @@ MLX = $(MINILIBXDIR)/libmlx.a
 all: $(NAME)
 
 $(NAME): $(OBJS) $(MLX)
-	$(CC) $(CFLAGS) $(OBJS)  -lmlx -lXext -lX11 -lm $(MLX) -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJS)  -lmlx -lXext -lX11  $(MLX) -o $(NAME)
 
 $(MLX):
 	$(MAKE) -C $(MINILIBXDIR)
 
-%.o: %.c $(HEADER)
-	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
 	rm -f $(OBJS)

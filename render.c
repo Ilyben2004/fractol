@@ -15,7 +15,7 @@ int shift_color_helper(t_vars * vars , int keycode)
 	}
 	return (0);
 }
-int	key_hook_helper(t_vars *vars, int keycode)
+static	int key_hook_helper(t_vars *vars, int keycode)
 {
 	if (keycode == 65363) //right
 	{
@@ -72,7 +72,7 @@ int	key_hook(int keycode, t_vars *vars)
 	return (1);
 }
 
-void	range_zoom_calculator(int keycode, double *range_re, double *range_im,
+static	void	range_zoom_calculator(int keycode, double *range_re, double *range_im,
 		t_vars *vars)
 {
 	double	zoom;
@@ -80,14 +80,13 @@ void	range_zoom_calculator(int keycode, double *range_re, double *range_im,
 	zoom = 1.11;
 	if (keycode == 4)
 	{
-		printf("cx %f cy %f \n",vars->cords.cx , vars->cords.cy);
 		*range_re = fabs(vars->cords.max_re - vars->cords.min_re) / zoom;
 		*range_im = fabs(vars->cords.max_im - vars->cords.min_im)/ zoom;
 	}
 	else
 	{
-		*range_re += fabs(vars->cords.max_re - vars->cords.min_re) * zoom;
-		*range_im += fabs(vars->cords.max_im - vars->cords.min_im)* zoom;
+		*range_re = fabs(vars->cords.max_re - vars->cords.min_re) * zoom;
+		*range_im = fabs(vars->cords.max_im - vars->cords.min_im)* zoom;
 	}
 	vars->cords.min_re = vars->cords.cx - ((*range_re) / 2);
 	vars->cords.max_re = vars->cords.cx + ((*range_re) / 2);
@@ -105,8 +104,8 @@ int	zoom(int keycode, int x, int y, t_vars *vars)
 	double	range_im;
 	void	*old_image;
 
-	x++;
-	y++;
+	(void)x;
+	(void)y;
 	if (keycode == 4 || keycode == 5)
 	{
 		range_zoom_calculator(keycode, &range_re, &range_im, vars);

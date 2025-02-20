@@ -8,9 +8,9 @@
 # include <string.h>
 # include <unistd.h>
 
-# define HEIGHT 700
-# define WIDTH 700
-# define  UP  65363
+# define HEIGHT 600
+# define WIDTH 600
+
 
 typedef struct s_img
 {
@@ -20,6 +20,7 @@ typedef struct s_img
 	int			line_len;
 	int			endian;
 }				t_img;
+
 typedef struct s_fractal
 {
 	void		*mlx;
@@ -39,7 +40,6 @@ typedef struct s_cords
 	double		re_helper;
 	double		im_helper;
 	int			max_iterations;
-	double		zoom;
 	double		cx;
 	double		cy;
 	double		julia_reel;
@@ -67,7 +67,6 @@ typedef struct s_vars
 	t_cords		cords;
 	t_fractal	fractal;
 	void		(*draw)(struct s_vars *vars);
-	int			ini;
 }				t_vars;
 
 void			img_pix_put(t_img *img, int x, int y, int color);
@@ -75,21 +74,28 @@ int				get_color(int iterations, t_vars * vars);
 void			mandelbort_helper(t_vars *vars, t_compelxes *compelxes);
 void			mandelbort_set(t_vars *vars);
 void			julia_set(t_vars *vars);
-void			cords_init(t_cords *cords, int zoomchecker);
-void			range_zoom_calculator(int keycode, double *range_re,
-					double *range_im, t_vars *vars);
+void			cords_init(t_cords *cords);
 int				zoom(int keycode, int x, int y, t_vars *vars);
 int				destroy_window(t_vars *vars);
-int				key_hook_helper(t_vars *vars, int keycode);
 int				key_hook(int keycode, t_vars *vars);
 void			perpendicular_set(t_vars *vars);
+int 			destroy_window_helper (int code , t_vars *vars);
+//libft
 char			*ft_strchr(const char *s, int c);
 int     		ft_isdigit(int c);
 long     		ft_atoi(const char *str);
 char    		*ft_substr(char const *s, unsigned int start, size_t len);
 size_t  		ft_strlen(const char *s);
+int ft_strcmp(char *s1, char *s2);
+//
+//parsing funstions
+int ft_free(char * is_float ,char * intpart);
+void error_exit();
+int is_number(char *num);
+int number_len(long number);
 void 			parse(int ac , char **av , t_vars * vars);
-int 			destroy_window_helper (int code , t_vars *vars);
+
+
 
 
 
