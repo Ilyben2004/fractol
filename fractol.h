@@ -11,7 +11,6 @@
 # define HEIGHT 600
 # define WIDTH 600
 
-
 typedef struct s_img
 {
 	void		*mlx_img;
@@ -70,7 +69,7 @@ typedef struct s_vars
 }				t_vars;
 
 void			img_pix_put(t_img *img, int x, int y, int color);
-int				get_color(int iterations, t_vars * vars);
+int				get_color(int iterations, t_vars *vars);
 void			mandelbort_helper(t_vars *vars, t_compelxes *compelxes);
 void			mandelbort_set(t_vars *vars);
 void			julia_set(t_vars *vars);
@@ -79,25 +78,20 @@ int				zoom(int keycode, int x, int y, t_vars *vars);
 int				destroy_window(t_vars *vars);
 int				key_hook(int keycode, t_vars *vars);
 void			perpendicular_set(t_vars *vars);
-int 			destroy_window_helper (int code , t_vars *vars);
-//libft
+int				destroy_window_helper(int code, t_vars *vars);
+// libft
 char			*ft_strchr(const char *s, int c);
-int     		ft_isdigit(int c);
-long     		ft_atoi(const char *str);
-char    		*ft_substr(char const *s, unsigned int start, size_t len);
-size_t  		ft_strlen(const char *s);
-int ft_strcmp(char *s1, char *s2);
+int				ft_isdigit(int c);
+long			ft_atoi(const char *str);
+char			*ft_substr(char const *s, unsigned int start, size_t len);
+size_t			ft_strlen(const char *s);
+int				ft_strcmp(char *s1, char *s2);
 //
-//parsing funstions
-int ft_free(char * is_float ,char * intpart);
-void error_exit();
-int is_number(char *num);
-int number_len(long number);
-void 			parse(int ac , char **av , t_vars * vars);
-
-
-
-
-
+// parsing funstions
+int				ft_free(char *is_float, char *intpart);
+void			error_exit(void);
+int				is_number(char *num);
+int				number_len(long number);
+void			parse(int ac, char **av, t_vars *vars);
 
 #endif

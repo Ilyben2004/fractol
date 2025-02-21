@@ -18,60 +18,59 @@ char	*ft_strchr(const char *s, int c)
 	return (NULL);
 }
 
-int     ft_isdigit(int c)
+int	ft_isdigit(int c)
 {
-        return ((c >= '0' && c <= '9'));
+	return ((c >= '0' && c <= '9'));
 }
 
-long    ft_atoi(const char *str)
+long	ft_atoi(const char *str)
 {
-        int             sign;
-        size_t  result;
+	int		sign;
+	size_t	result;
 
-        result = 0;
-        sign = 1;
-        if (*str == '-' || *str == '+')
-        {
-                if (*str == '-')
-                        sign = -1;
-                str++;
-        }
-        while (ft_isdigit(*str))
-        {
-                result = result * 10 + (*str - '0');
-                str++;
-        }
-        return (result * sign);
+	result = 0;
+	sign = 1;
+	if (*str == '-' || *str == '+')
+	{
+		if (*str == '-')
+			sign = -1;
+		str++;
+	}
+	while (ft_isdigit(*str))
+	{
+		result = result * 10 + (*str - '0');
+		str++;
+	}
+	return (result * sign);
 }
 
-char    *ft_substr(char const *s, unsigned int start, size_t len)
+char	*ft_substr(char const *s, unsigned int start, size_t len)
 {
-        char    *substr;
-        size_t  i;
-        char    *ss;
+	char	*substr;
+	size_t	i;
+	char	*ss;
 
-
-        substr = malloc(len + 1);
-        if (!substr)
-                return (NULL);
-        ss = (char *)s;
-        i = 0;
-        while (i < len && ss[start])
-        {
-                substr[i++] = ss[start++];
-        }
-        substr[i] = '\0';
-        return (substr);
+	substr = malloc(len + 1);
+	if (!substr)
+		return (NULL);
+	ss = (char *)s;
+	i = 0;
+	while (i < len && ss[start])
+	{
+		substr[i++] = ss[start++];
+	}
+	substr[i] = '\0';
+	return (substr);
 }
 
-size_t  ft_strlen(const char *s)
+size_t	ft_strlen(const char *s)
 {
-        size_t  i;
+	size_t	i;
 
-        i = 0;
-        while (s[i])
-        {
-                i++;
-        }
-        return (i);
+	i = 0;
+	while (s[i])
+	{
+		i++;
+	}
+	return (i);
 }

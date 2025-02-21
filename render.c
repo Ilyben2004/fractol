@@ -1,7 +1,6 @@
 #include "fractol.h"
 
-
-int shift_color_helper(t_vars * vars , int keycode)
+int	shift_color_helper(t_vars *vars, int keycode)
 {
 	if (keycode == 99)
 	{
@@ -15,33 +14,34 @@ int shift_color_helper(t_vars * vars , int keycode)
 	}
 	return (0);
 }
-static	int key_hook_helper(t_vars *vars, int keycode)
+
+static int	key_hook_helper(t_vars *vars, int keycode)
 {
-	if (keycode == 65363) //right
+	if (keycode == 65363)
 	{
 		vars->cords.min_re += (vars->cords.max_re - vars->cords.min_re) / 10;
 		vars->cords.max_re += (vars->cords.max_re - vars->cords.min_re) / 10;
 		return (1);
 	}
-	else if (keycode == 65361)//left 
+	else if (keycode == 65361)
 	{
 		vars->cords.min_re -= (vars->cords.max_re - vars->cords.min_re) / 10;
 		vars->cords.max_re -= (vars->cords.max_re - vars->cords.min_re) / 10;
 		return (1);
 	}
-	else if (keycode == 65362) // up
+	else if (keycode == 65362)
 	{
 		vars->cords.min_im += (vars->cords.max_im - vars->cords.min_im) / 10;
 		vars->cords.max_im += (vars->cords.max_im - vars->cords.min_im) / 10;
 		return (1);
 	}
-	else if (keycode == 65364)//down
+	else if (keycode == 65364)
 	{
 		vars->cords.min_im -= (vars->cords.max_im - vars->cords.min_im) / 10;
 		vars->cords.max_im -= (vars->cords.max_im - vars->cords.min_im) / 10;
 		return (1);
 	}
-	return (shift_color_helper(vars , keycode));
+	return (shift_color_helper(vars, keycode));
 }
 
 int	key_hook(int keycode, t_vars *vars)
@@ -72,8 +72,8 @@ int	key_hook(int keycode, t_vars *vars)
 	return (1);
 }
 
-static	void	range_zoom_calculator(int keycode, double *range_re, double *range_im,
-		t_vars *vars)
+static void	range_zoom_calculator(int keycode, double *range_re,
+		double *range_im, t_vars *vars)
 {
 	double	zoom;
 
@@ -81,12 +81,12 @@ static	void	range_zoom_calculator(int keycode, double *range_re, double *range_i
 	if (keycode == 4)
 	{
 		*range_re = fabs(vars->cords.max_re - vars->cords.min_re) / zoom;
-		*range_im = fabs(vars->cords.max_im - vars->cords.min_im)/ zoom;
+		*range_im = fabs(vars->cords.max_im - vars->cords.min_im) / zoom;
 	}
 	else
 	{
 		*range_re = fabs(vars->cords.max_re - vars->cords.min_re) * zoom;
-		*range_im = fabs(vars->cords.max_im - vars->cords.min_im)* zoom;
+		*range_im = fabs(vars->cords.max_im - vars->cords.min_im) * zoom;
 	}
 	vars->cords.min_re = vars->cords.cx - ((*range_re) / 2);
 	vars->cords.max_re = vars->cords.cx + ((*range_re) / 2);
@@ -121,5 +121,5 @@ int	zoom(int keycode, int x, int y, t_vars *vars)
 		mlx_put_image_to_window(vars->fractal.mlx, vars->fractal.mlx_win,
 			vars->fractal.img.mlx_img, 0, 0);
 	}
-	return(1);
+	return (1);
 }

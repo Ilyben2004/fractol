@@ -16,7 +16,7 @@ int	main(int ac, char **av)
 {
 	t_vars	vars;
 
-	parse(ac , av , &vars);
+	parse(ac, av, &vars);
 	vars.fractal.mlx = mlx_init();
 	if (!vars.fractal.mlx)
 		return (0);
