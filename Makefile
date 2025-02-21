@@ -4,27 +4,18 @@ CFLAGS = -Wall -Wextra -Werror
 
 NAME = fractol
 
-HEADER = fractol.h
-
-MINILIBXDIR = minilibx-linux
 
 SRCS = render.c utils.c fractols.c fractol.c libft.c parsing.c parsing2.c
-OBJS = $(SRCS:.c=.o)
 
-MLX = $(MINILIBXDIR)/libmlx.a
+OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)
 
-$(NAME): $(OBJS) $(MLX)
-	$(CC) $(CFLAGS) $(OBJS) -L$(MINILIBXDIR) -lmlx -lXext -lX11 -lm -o $(NAME)
-
-$(MLX):
-	$(MAKE) -C $(MINILIBXDIR)
-
+$(NAME): $(OBJS) 
+	$(CC) $(CFLAGS) $(OBJS) -lmlx -lXext -lX11 -o $(NAME)
 
 clean:
 	rm -f $(OBJS)
-	$(MAKE) -C $(MINILIBXDIR) clean
 
 fclean: clean
 	rm -f $(NAME)

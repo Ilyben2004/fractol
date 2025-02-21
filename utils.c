@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ibennaje <ibennaje@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/21 12:56:26 by ibennaje          #+#    #+#             */
+/*   Updated: 2025/02/21 13:16:08 by ibennaje         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "fractol.h"
 
 void	img_pix_put(t_img *img, int x, int y, int color)
@@ -5,7 +17,7 @@ void	img_pix_put(t_img *img, int x, int y, int color)
 	char	*pixel;
 
 	pixel = img->addr + (y * img->line_len + x * (img->bpp / 8));
-	*(unsigned int *)pixel = color;
+	*((int *) pixel) = color;
 }
 
 int	get_color(int iterations, t_vars *vars)
